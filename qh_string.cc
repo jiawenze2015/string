@@ -1,7 +1,6 @@
 #include "qh_string.h"
 
-#include <string.h>
-
+#include <string.h> 
 namespace qh
 {
     // TODO 将在这里写实现代码
@@ -12,21 +11,50 @@ namespace qh
     }
 
     string::string( const char* s )
-        :data_(new char [strlen(s) + 1]), len_(strlen(s))
 	{
-        strcpy(data_, s);
+		if (s)
+		{
+			len_  = strlen(s);
+			data_ = new char [len_ + 1];
+			strcpy(data_, s);
+		}
+		else
+		{
+			len_  = 0;
+			data_ = NULL;
+		}
+
     }
 
+	//理解为用s的前len个字符初始化，len长度大于s长度则按s长度处理
     string::string( const char* s, size_t len )
     {
-        data_ = new char[len + 1];
-	    strcpy(data_, s);
+        if (!s)
+		{
+			len_  = 0;
+			data_ = NULL;
+		}
+		else
+		{
+			len_ = (strlen(s) > len) ? len : strlen(s);
+			data_ = new char[len_ + 1];
+		    strcpy(data_, s);
+		}
     }
 
     string::string( const string& rhs )
-        :data_(new char [rhs.size() + 1]) ,len_(rhs.size())
     {
-        strcpy(data_, rhs.c_str());
+		if (rhs)
+		{
+			len_  = strlen(rhs.data_);
+			data_ = new char [len_ + 1];
+			strcpy(data_, rhs.c_str());
+		}
+		else
+		{
+			len_  = 0;
+			data_ = NULL;
+		}
     }
 
     string& string::operator=( const string& rhs )
@@ -34,11 +62,19 @@ namespace qh
         if (this == &rhs)
         {
             return *this;    
-        } 
-        len_ = rhs.len_;
-        delete data_;
-        data_ = new char[rhs.len_ + 1];
-        strcpy(data_, rhs.c_str());
+        }
+		if (rhs)
+		{
+			len_ = rhs.len_;
+			delete data_;
+			data_ = new char[rhs.len_ + 1];
+			strcpy(data_, rhs.c_str());
+		}
+		else
+		{
+			len_  = 0;
+			data_ = NULL;	
+		}
             
         return *this;
     }
@@ -68,8 +104,8 @@ namespace qh
     {
 		if (index < len_ && index > 0)
 		{
-			return &data_[index];
+			return data_[index];
 		}
-		//operator[]不检查索引是否有效
+	    return -1;
     }
 }
